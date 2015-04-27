@@ -1,83 +1,41 @@
 <?php
+function my_awesome_module_hook_block_info() {
 
-/**
-* @file
-*
-* Logs user's logins and display last login details
-*
-* DrupalD
-*/
+$date = the UTC value of the database
+$local_zone = the name of the local timezone
+$type = the type of date value , DATE_DATETIME, DATE_ISO, 
+or DATE_UNIX 
+$date = date_make_date($date, ‘UTC’, $type);
+date_timezone_set($date, timezone_open($local_zone));
+$date now contains the local value of the date.
+Output it like:
+print date_format_date($date, ‘custom’, ‘m/d/Y H:i’);
 
-/**
-* Implementation of hook_user
-*
-* @param $op
-* @param $edit
-* @param $account
-* @param $category
-* DrupalD
-*/
-function last_login_user($op, &$edit, &$account, $category = NULL) {
-global $user;
-switch ($op) {
-case 'login':
-case 'register':
-db_query('INSERT INTO {last_login VALUES(id, %d, %d)', $user->uid, time('now'));
-break;
-}
-}
 
-/**
-* Implementation of hook_block
-*
-* @param unknown_type $op
-* @param unknown_type $delta
-* @param unknown_type $edit
-* DrupalD
-*/
-function last_login_block($op = 'list', $delta = 0, $edit = array()) {
-if ($op == 'list') {
-$blocks[0] = array(
-'info' => t('Last login'),
-'status' => 1,
-'weight' => 0,
-'region' => 'right',
-);
-return $blocks;
+function my_awesome_module_login_form_alter(&$form, &$form_state) {}
+
+  $blocks[‘date’] = array(
+    ‘info’ => t(’Your timezone is’),
+    ‘cache’ => DRUPAL_NO_CACHE,
+  );
+
+
+  $blocks[‘recent’] = array(
+    ‘info’ => t(‘Recent content’),
+  );
+
+  return $blocks;
 }
-if ($op == 'view') {
-switch ($delta) {
-case 0:
-$output = _get_last_login();
-echo $output;
-$block = array(
-'subject' => t("Last login"),
-'content' => $output,
-);
-break;
-}
-return $block;
 }
 }
 
-/**
-* _get_last_login
-*
-* Get last login details of the user
-* DrupalD
-*/
-function _get_last_login() {
-global $user;
-$sn__last_login = db_result(db_query('SELECT last_logged FROM {last_login} WHERE uid = %d ORDER BY id DESC LIMIT 1, 1', $user->uid));
-if (empty($sn__last_login)) {
-$sn__last_login = db_result(db_query('SELECT last_logged FROM {last_login} WHERE uid = %d ORDER BY id DESC LIMIT 0, 1', $user->uid));
-}
-if (!empty($sn__last_login)) {
-$output = t('Last login at @time on @date', array('@time' => format_date($sn__last_login, 'custom', 'h:m A T'), '@date' => format_date($sn__last_login, 'custom','m/d/Y')));
-}
-else {
-$output = t('Last login details not available');
-}
-return $output;
-}
+function hook_block_view_alter(&$data, $block) {
+
+  if (is_array($data[‘content’]) && asset($data[‘content’][‘#contextual_links’])) {
+    unset($data[‘content’][‘#contextual_links’]);
+  }
+
+  if (is_array($data[‘content’]) && $block->module == ‘some module’) {
+    $data[‘content’][‘#theme_wrappers’][] = ‘mymodule_special_block’;
+  }
 ?>
