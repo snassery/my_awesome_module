@@ -1,0 +1,9 @@
+name = my awesome module
+description = mt last login time stamp.
+core = 7.x 
+dependencies[] = ctools
+version = 7.x-1.0
+
+
+regions[left_side_rail]     = 'Left side-rail'
+ 
