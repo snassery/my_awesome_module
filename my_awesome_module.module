@@ -1,16 +1,5 @@
 <?php
-function my_awesome_module_hook_block_info() {
-
-$date = the UTC value of the database
-$local_zone = the name of the local timezone
-$type = the type of date value , DATE_DATETIME, DATE_ISO, 
-or DATE_UNIX 
-$date = date_make_date($date, ‘UTC’, $type);
-date_timezone_set($date, timezone_open($local_zone));
-$date now contains the local value of the date.
-Output it like:
-print date_format_date($date, ‘custom’, ‘m/d/Y H:i’);
-
+ 
 
 function my_awesome_module_login_form_alter(&$form, &$form_state) {}
 
